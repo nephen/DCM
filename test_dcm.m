@@ -14,8 +14,8 @@ graf(imu_sequence,4)=zeros;      %绘图数组初始化
 for n = 1:imu_sequence          %循环imu_sequence次进行矩阵更新，如100，则进行100*0.02=2s，三轴变化应该为2，4，6
     dR(3)=zeros;
     for k = 1:3
-        dR=cross(Theta,dcmEst(k,:));
-        dcmEst(k,:)=dcmEst(k,:)+dR;
+        dR=cross(Theta,dcmEst(k,:));        %向量叉乘
+        dcmEst(k,:)=dcmEst(k,:)+dR;     %累加
     end
     %误差计算
     error=-dot(dcmEst(1,:),dcmEst(2,:))*0.5;
