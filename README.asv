@@ -1,0 +1,5 @@
+# DCM
+这个工程是基于[starlino](http://www.starlino.com/dcm_tutorial.html)的DCM在matlab上的实现,参考评论区83楼Leonardo Garberoglio的原有想法。
+
+其中imh.h为[原c语言](https://github.com/nephen/picquadcontroller/blob/master/imu.h)实现。
+
