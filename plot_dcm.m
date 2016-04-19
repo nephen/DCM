@@ -1,4 +1,3 @@
-load('test_data.mat');      %导入飞行数据
 %ATT数据格式为：TimeUS,DesRoll,Roll,DesPitch,Pitch,DesYaw,Yaw,ErrRP,ErrYaw
 %IMU数据格式为：TimeUS,GyrX,GyrY,GyrZ,AccX,AccY,AccZ,ErrG,ErrA,Temp,GyHlt,AcHlt
 %AHR2数据格式为：TimeUS,Roll,Pitch,Yaw,Alt,Lat,Lng

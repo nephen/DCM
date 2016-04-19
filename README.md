@@ -4,3 +4,16 @@
 其中imh.h为[原c语言](https://github.com/nephen/picquadcontroller/blob/master/imu.h)实现，飞行数据来源为sd卡，通过MP地面站转换，如下。
 
 ![log2matlab](log2matlab.png)
+
+##怎么运行
+
+1. 将DCM目录作为你的工作目录。
+2. 运行test_dcm命令即可。
+
+##效果分析
+在MP地面站，可以对SD卡里在飞行数据进行图形分析，能看出飞控端DCM姿态解算的效果，如下：
+
+![sd_dcm](sd_dcm.png)
+然后根据这个去对比matlab解算的姿态效果，初略的如下：
+
+![first_dcm](first_dcm.png)

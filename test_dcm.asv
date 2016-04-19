@@ -1,5 +1,11 @@
 clear;
 clc;
+
+load('test_data.mat');      %导入飞行数据
+%ATT数据格式为：TimeUS,DesRoll,Roll,DesPitch,Pitch,DesYaw,Yaw,ErrRP,ErrYaw
+%IMU数据格式为：TimeUS,GyrX,GyrY,GyrZ,AccX,AccY,AccZ,ErrG,ErrA,Temp,GyHlt,AcHlt
+%AHR2数据格式为：TimeUS,Roll,Pitch,Yaw,Alt,Lat,Lng
+
 imu_interval_s=0.02;
 %时间间隔为0.02秒
 %初始矩阵为地理坐标轴
@@ -8,13 +14,22 @@ wx=1;   %1度/秒的角速度
 wy=2;
 wz=3;
 W=[wx wy wz]*pi/180;    %将角度转换为弧度
-Theta=W*imu_interval_s;   %在时间间隔的角度变化向量
 imu_sequence = 200;     %累积次数
 graf(imu_sequence,4)=zeros;      %绘图数组初始化
+ACC_WEIGHT=
+
 for n = 1:imu_sequence          %循环imu_sequence次进行矩阵更新，如100，则进行100*0.02=2s，三轴变化应该为2，4，6
-    dR
+    Kacc(3)=IMU(n,[6,7,8]);     %导入原始加速度计的值
+    Kacc = Kacc/norm(Kacc);     %加速度计向量归一化处理
+    wA(3)=zeros;
+    wA=cross(dcmEst(2,:),Kacc);     %wA = Kgyro x	 Kacc
+    
+    Theta=W*imu_interval_s;   %在时间间隔的角度变化向量
+    
+    dR(3)=zeros;
     for k = 1:3
-        
+        dR=cross(Theta,dcmEst(k,:));        %向量叉乘
+        dcmEst(k,:)=dcmEst(k,:)+dR;     %累加
     end
     %误差计算
     error=-dot(dcmEst(1,:),dcmEst(2,:))*0.5;
