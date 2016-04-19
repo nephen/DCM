@@ -2,18 +2,22 @@ clear;
 clc;
 
 load('test_data.mat');      %导入飞行数据
-%ATT数据格式为：TimeUS,DesRoll,Roll,DesPitch,Pitch,DesYaw,Yaw,ErrRP,ErrYaw
-%IMU数据格式为：TimeUS,GyrX,GyrY,GyrZ,AccX,AccY,AccZ,ErrG,ErrA,Temp,GyHlt,AcHlt
-%AHR2数据格式为：TimeUS,Roll,Pitch,Yaw,Alt,Lat,Lng
-
+%ATT数据格式为：{'LineNo';'TimeUS';'DesRoll';'Roll';'DesPitch';'Pitch';'DesYaw';'Yaw';'ErrRP';'ErrYaw'}
+%IMU数据格式为：{'LineNo';'TimeUS';'GyrX';'GyrY';'GyrZ';'AccX';'AccY';'AccZ';'ErrG';'ErrA';'Temp';'GyHlt';'AcHlt'}
+%AHR2数据格式为：{'LineNo';'TimeUS';'Roll';'Pitch';'Yaw';'Alt';'Lat';'Lng'}
+%MAG数据格式为：{'LineNo';'TimeUS';'MagX';'MagY';'MagZ';'OfsX';'OfsY';'OfsZ';'MOfsX';'MOfsY';'MOfsZ';'Health'}
+%其中ATT为EKF后在姿态，AHR2为DCM后在姿态
 imu_interval_s=0.02;
 %时间间隔为0.02秒
 %初始矩阵为地理坐标轴
 dcmEst=[1 0 0; 0 1 0; 0 0 1];
 
-imu_sequence = 2000;     %累积次数
+imu_sequence = size(IMU,1);     %累积次数,通过读取数组在大小
+mag_num = size(MAG,1);
+discuss = ceil(imu_sequence/mag_num);       %商取整
 graf(imu_sequence,4)=zeros;      %绘图数组初始化
-ACC_WEIGHT=0.03;        %加速度计的权重
+ACC_WEIGHT=0.02;        %加速度计的权重
+MAG_WEIGHT=0.01;         %磁力计的权重
 
 for n = 1:imu_sequence          %循环imu_sequence次进行矩阵更新，如100，则进行100*0.02=2s，三轴变化应该为2，4，6
     Kacc = -IMU(n,[6,7,8]);     %导入原始加速度计的值
@@ -22,9 +26,22 @@ for n = 1:imu_sequence          %循环imu_sequence次进行矩阵更新，如100，则进行10
     wA=cross(dcmEst(2,:),Kacc);     %wA = Kgyro x	 Kacc
     
     w(3) = zeros;
-    w = -IMU(n,[3,4,5]);        %导入陀螺仪在值
+    w = -IMU(n,[3,4,5]);        %导入原始陀螺仪的值
+          
+    %导入磁力计的数据，注意SD卡里并没有IMU那么多数据，必须除以它们的商值
+    z = ceil(n/discuss);
+    %限幅
+    if z <= 1
+        z = 1;
+    elseif z >= mag_num
+            z = mag_num;
+    end
+    Imag = MAG(z,[3,4,5]);
+    Imag = Imag/norm(Imag);     %磁力计数据归一化处理
+    wM(3) = zeros;
+    wM=cross(dcmEst(1,:),Imag);     %wM = Igyro x Imag
     
-    Theta=w*imu_interval_s + wA*ACC_WEIGHT;   %在时间间隔的角度变化向量，取权重值
+    Theta=(w*imu_interval_s + wA*ACC_WEIGHT + wM*MAG_WEIGHT)/(1+ACC_WEIGHT+MAG_WEIGHT);   %在时间间隔的角度变化向量，取权重值
     
     dR(3)=zeros;
     for k = 1:3
