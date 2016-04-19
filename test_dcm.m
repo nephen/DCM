@@ -80,10 +80,16 @@ for n = 1:imu_sequence          %循环imu_sequence次进行矩阵更新，如100，则进行10
     q = dcm2quat(dcmEst);
     [graf(n,2),graf(n,3),graf(n,4)] = quat2angle(q);
 end
-figure
-hold on
-%转换为角度并绘图
-plot(graf(:,1),graf(:,2)*(180/pi),'+b');%yaw
-plot(graf(:,1),graf(:,3)*(180/pi),'.r');%pitch
-plot(graf(:,1),graf(:,4)*(180/pi),'.g');%roll
-grid
+
+figure('NumberTitle', 'off', 'Name', 'Matlab端DCM解算姿态');
+subplot(3,1,1);
+%转换为角度并绘图，为了与飞控的算法对比，结果取反了
+plot(graf(:,1),-graf(:,4)*(180/pi),'-g');%roll
+grid on;
+subplot(3,1,2);
+plot(graf(:,1),-graf(:,3)*(180/pi),'-r');%pitch
+grid on;
+subplot(3,1,3);
+plot(graf(:,1),-graf(:,2)*(180/pi),'-b');%yaw
+grid on;
+plot_dcm;
