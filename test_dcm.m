@@ -12,21 +12,22 @@ imu_interval_s=0.02;
 %初始矩阵为地理坐标轴
 dcmEst=[1 0 0; 0 1 0; 0 0 1];
 
-imu_sequence = size(IMU,1);     %累积次数,通过读取数组在大小
+imu_sequence = size(IMU,1);     %累积次数,通过读取数组的大小
 mag_num = size(MAG,1);
 discuss = ceil(imu_sequence/mag_num);       %商取整
 graf(imu_sequence,4)=zeros;      %绘图数组初始化
-ACC_WEIGHT=0.02;        %加速度计的权重
+ACC_WEIGHT=0.01;        %加速度计的权重
 MAG_WEIGHT=0.01;         %磁力计的权重
 
 for n = 1:imu_sequence          %循环imu_sequence次进行矩阵更新，如100，则进行100*0.02=2s，三轴变化应该为2，4，6
-    Kacc = -IMU(n,[6,7,8]);     %导入原始加速度计的值
+    %导入原始加速度计的值，减去一个偏移量
+    Kacc = -(IMU(n,[6,7,8])-[-0.009520,-0.153500,-1.208550]);     
     Kacc = Kacc/norm(Kacc);     %加速度计向量归一化处理
     wA(3)=zeros;
     wA=cross(dcmEst(2,:),Kacc);     %wA = Kgyro x	 Kacc
     
     w(3) = zeros;
-    w = -IMU(n,[3,4,5]);        %导入原始陀螺仪的值
+    w = -(IMU(n,[3,4,5])-[0.009030,0.009944,-0.002738]);        %导入原始陀螺仪的值
           
     %导入磁力计的数据，注意SD卡里并没有IMU那么多数据，必须除以它们的商值
     z = ceil(n/discuss);
