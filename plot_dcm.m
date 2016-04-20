@@ -6,10 +6,19 @@
 figure('NumberTitle', 'off', 'Name', '飞控端DCM解算姿态');
 subplot(3,1,1);
 plot(AHR2(:,2),AHR2(:,3),'-g');%Roll        %打印DCM姿态角,其中AHR2(:,2)即为TimeUS，依次类推
+title('Roll');
+xlabel('Time/s');
+ylabel('Angle/deg');
 grid on;
 subplot(3,1,2);
 plot(AHR2(:,2),AHR2(:,4),'-r');%Pitch
+title('Pitch');
+xlabel('Time/s');
+ylabel('Angle/deg');
 grid on;
 subplot(3,1,3);
 plot(AHR2(:,2),AHR2(:,5),'-b');%Yaw
+title('Yaw');
+xlabel('Time/s');
+ylabel('Angle/deg');
 grid on;
