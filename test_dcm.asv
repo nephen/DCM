@@ -50,7 +50,7 @@ for n = 1:imu_sequence          %循环imu_sequence次进行矩阵更新，如100，则进行10
         elseif z >= mag_num
                 z = mag_num;
         end
-        Imag = -MAG(z,[3,4,5]); %单位milligauss
+        Imag = -MAG(z,[3,4,5]); %单位
         Imag = Imag/norm(Imag);     %磁力计数据归一化处理
         wM(3) = zeros;
         wM=cross(dcmEst(1,:),Imag);     %wM = Igyro x Imag
